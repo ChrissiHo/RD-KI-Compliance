@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RidersDeal · KI Compliance Toolkit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vidaloka&family=Palanquin:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #DEB664; --gold30: #F5E9D1; --gold-hover: #A39669;
+      --green: #507255; --green30: #B9C3BA;
+      --red: #852E2E; --red30: #E7D5D5;
+      --black: #282422; --darkgrey: #858890;
+      --lightgrey: #F0F2F6; --white: #FFFFFF;
+      --amber: #7a5c1e;
+    }
+    body {
+      font-family: 'Palanquin', sans-serif;
+      color: var(--black);
+      background: var(--lightgrey);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .page-wrap { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Header */
+    .page-header {
+      background: var(--black);
+      color: var(--white);
+      padding: 32px 40px 28px;
+      margin-bottom: 32px;
+    }
+    .page-header .logo {
+      font-family: 'Palanquin', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .page-header h1 {
+      font-family: 'Vidaloka', serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+    }
+    .page-header .sub {
+      font-size: 13px;
+      color: var(--darkgrey);
+      margin-top: 6px;
+    }
+
+    /* Tabs */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      border-bottom: 2px solid var(--gold);
+    }
+    .tab-btn {
+      font-family: 'Palanquin', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      padding: 12px 24px;
+      background: var(--white);
+      border: none;
+      border-bottom: none;
+      cursor: pointer;
+      color: var(--darkgrey);
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-btn:hover { background: var(--gold30); color: var(--black); }
+    .tab-btn.active { background: var(--gold); color: var(--black); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gold30);
+      padding: 24px 28px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-family: 'Vidaloka', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--black);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gold30);
+      margin-bottom: 16px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-family: 'Palanquin', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 2px;
+      letter-spacing: 0.06em;
+      vertical-align: middle;
+    }
+    .badge-green  { background: var(--green); color: var(--white); }
+    .badge-red    { background: var(--red); color: var(--white); }
+    .badge-gold   { background: var(--gold); color: var(--black); }
+    .badge-grey   { background: var(--lightgrey); color: var(--darkgrey); }
+    .badge-dark   { background: var(--black); color: var(--white); }
+
+    /* Info boxes */
+    .info-box  { background: var(--gold30); padding: 12px 16px; font-size: 12px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--gold); }
+    .warn-box  { background: var(--red30); padding: 12px 16px; font-size: 12px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--red); }
+    .ok-box    { background: var(--green30); padding: 12px 16px; font-size: 12px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--green); }
+
+    /* Form elements */
+    label { display: block; font-size: 11px; font-weight: 700; color: var(--darkgrey); margin-bottom: 4px; letter-spacing: 0.04em; }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%;
+      font-family: 'Palanquin', sans-serif;
+      font-size: 13px;
+      color: var(--black);
+      background: var(--white);
+      border: 1px solid #d0ccc8;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+    textarea { resize: vertical; min-height: 60px; }
+    .form-row { margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    /* Buttons */
+    .btn {
+      font-family: 'Palanquin', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary { background: var(--gold); color: var(--black); }
+    .btn-primary:hover { background: var(--gold-hover); }
+    .btn-secondary { background: var(--black); color: var(--white); }
+    .btn-secondary:hover { background: #424242; }
+    .btn-danger { background: var(--red); color: var(--white); }
+    .btn-sm { padding: 5px 12px; font-size: 11px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+    /* Tables */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th { color: var(--darkgrey); font-weight: 700; text-align: left; padding: 6px 10px 8px; border-bottom: 1px solid var(--gold); font-size: 11px; letter-spacing: 0.04em; }
+    .tbl td { padding: 8px 10px; color: var(--black); border-bottom: 1px solid var(--gold30); vertical-align: middle; }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl .actions { display: flex; gap: 6px; }
+
+    /* Section label */
+    .section-label {
+      font-family: 'Vidaloka', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--black);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--gold30);
+      margin: 24px 0 12px;
+    }
+
+    /* Checklist */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gold30);
+      font-size: 13px;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; accent-color: var(--green); flex-shrink: 0; cursor: pointer; }
+    .checklist .cl-label { flex: 1; }
+    .checklist .cl-label strong { display: block; font-weight: 700; margin-bottom: 2px; }
+    .checklist .cl-label span { color: var(--darkgrey); font-size: 12px; }
+    .checklist .cl-status { font-size: 11px; font-weight: 700; min-width: 80px; text-align: right; }
+
+    /* Status indicator */
+    .status-bar { display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: var(--lightgrey); margin-bottom: 20px; }
+    .status-bar .stat { text-align: center; }
+    .status-bar .stat-val { font-family: 'Vidaloka', serif; font-size: 24px; color: var(--black); line-height: 1; }
+    .status-bar .stat-lbl { font-size: 10px; color: var(--darkgrey); font-weight: 700; letter-spacing: 0.04em; }
+    .status-bar .divider { width: 1px; height: 40px; background: var(--gold30); }
+    .progress-wrap { flex: 1; }
+    .progress-lbl { font-size: 11px; font-weight: 700; color: var(--darkgrey); margin-bottom: 5px; }
+    .progress-bar { height: 6px; background: var(--gold30); }
+    .progress-fill { height: 100%; background: var(--green); transition: width 0.3s; }
+
+    /* Print */
+    @media print {
+      .tab-nav { display: none; }
+      .tab-panel { display: block !important; page-break-before: always; }
+      .tab-panel:first-of-type { page-break-before: avoid; }
+      .btn { display: none; }
+    }
+
+    hr.rd { border: none; border-top: 1px solid var(--gold30); margin: 20px 0; }
+    .text-grey { color: var(--darkgrey); }
+    .text-small { font-size: 11px; }
+    .mt8 { margin-top: 8px; }
+    .mt16 { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="logo">RIDERS DEAL · KI COMPLIANCE</div>
+    <h1>KI Act Compliance Toolkit</h1>
+    <div class="sub">EU AI Act · Artikel 4 Schulungspflicht · Artikel 50 Transparenzpflicht · Stand: Juni 2026</div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('inventar')">📋 KI-Inventar</button>
+    <button class="tab-btn" onclick="showTab('schulung')">🎓 Schulungsnachweise</button>
+    <button class="tab-btn" onclick="showTab('transparenz')">✅ Aug. 2026 Checkliste</button>
+    <button class="tab-btn" onclick="showTab('status')">📊 Compliance-Status</button>
+  </div>
+
+  <!-- TAB 1: KI-INVENTAR -->
+  <div id="tab-inventar" class="tab-panel active">
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">KI-Inventar — freigegebene Tools & Systeme</div>
+
+      <div class="info-box">
+        <strong>Warum dieses Inventar?</strong> Der EU AI Act verpflichtet euch als Betreiber, alle eingesetzten KI-Systeme zu kennen und nach Risikostufe einzuordnen. Ohne Inventar ist keine Compliance möglich. Das ist auch die Grundlage für Katharina Dorns Freigabeprozess.
+      </div>
+
+      <div class="section-label">Neues KI-Tool erfassen</div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Tool-Name *</label>
+          <input type="text" id="inv-name" placeholder="z.B. Claude (claude.ai)">
+        </div>
+        <div class="form-row">
+          <label>Anbieter</label>
+          <input type="text" id="inv-anbieter" placeholder="z.B. Anthropic">
+        </div>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-row">
+          <label>Einsatzzweck *</label>
+          <select id="inv-zweck">
+            <option value="">— auswählen —</option>
+            <option>Texterstellung / Kommunikation</option>
+            <option>Bildgenerierung / Design</option>
+            <option>Datenanalyse</option>
+            <option>Coding / Entwicklung</option>
+            <option>HR / Recruiting</option>
+            <option>Automatisierung / Workflows</option>
+            <option>Kundenservice / Chatbot</option>
+            <option>Übersetzung</option>
+            <option>Recherche / Zusammenfassung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Risikostufe (AI Act)</label>
+          <select id="inv-risiko">
+            <option value="minimal">Minimal — keine Pflichten</option>
+            <option value="begrenzt">Begrenzt — Transparenzpflicht</option>
+            <option value="hoch">Hoch — voller Katalog (z.B. HR-KI)</option>
+            <option value="verboten">Verboten — nicht erlaubt</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Status</label>
+          <select id="inv-status">
+            <option value="freigegeben">✅ Freigegeben (IT)</option>
+            <option value="pruefung">🔄 In Prüfung</option>
+            <option value="gesperrt">🚫 Gesperrt</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Verantwortliche Person</label>
+          <input type="text" id="inv-verantwortlich" placeholder="z.B. Katharina Dorn">
+        </div>
+        <div class="form-row">
+          <label>Nutzende Teams / Abteilungen</label>
+          <input type="text" id="inv-teams" placeholder="z.B. Marketing, HR, alle MA">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Verwendete Daten (kurze Beschreibung)</label>
+        <textarea id="inv-daten" placeholder="z.B. Nur anonymisierte Texte, keine personenbezogenen Daten. Kein Upload von Kundendaten."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="addTool()">Tool hinzufügen</button>
+        <button class="btn btn-secondary" onclick="prefillBeispiele()">Beispiel-Tools laden</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Aktuelle Tool-Liste</div>
+      <table class="tbl" id="inventar-table">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Anbieter</th>
+            <th>Zweck</th>
+            <th>Risiko</th>
+            <th>Status</th>
+            <th>Verantwortlich</th>
+            <th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="inventar-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--darkgrey);padding:24px;">Noch keine Tools erfasst. Oben hinzufügen oder Beispiele laden.</td></tr>
+        </tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="exportInventar()">Inventar als CSV exportieren</button>
+        <button class="btn btn-secondary btn-sm" onclick="printSection('inventar')">Drucken / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: SCHULUNGSNACHWEISE -->
+  <div id="tab-schulung" class="tab-panel">
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Schulungsnachweis erfassen — Art. 4 EU AI Act</div>
+
+      <div class="info-box">
+        <strong>Was wird hier dokumentiert?</strong> Art. 4 fordert nachweisbare KI-Kompetenz — nicht nur Kenntnisnahme einer Richtlinie. Jede Person, die KI beruflich nutzt, braucht einen Schulungsnachweis. Format ist frei; entscheidend ist die Dokumentation.
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Name der Person *</label>
+          <input type="text" id="sch-name" placeholder="z.B. Anna Muster">
+        </div>
+        <div class="form-row">
+          <label>Position / Abteilung</label>
+          <input type="text" id="sch-position" placeholder="z.B. Marketing Manager">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Schulungsdatum *</label>
+          <input type="date" id="sch-datum">
+        </div>
+        <div class="form-row">
+          <label>Schulungsformat</label>
+          <select id="sch-format">
+            <option>Interne Session (Team)</option>
+            <option>E-Learning (selbst absolviert)</option>
+            <option>1:1 Einweisung durch IT</option>
+            <option>Workshop / externer Kurs</option>
+            <option>Onboarding-Schulung</option>
+            <option>Richtlinie gelesen + Verständnis-Check</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-row">
+          <label>Dauer (Minuten)</label>
+          <input type="text" id="sch-dauer" placeholder="z.B. 45">
+        </div>
+        <div class="form-row">
+          <label>Durchgeführt von</label>
+          <input type="text" id="sch-durchgefuehrt" placeholder="z.B. Katharina Dorn">
+        </div>
+        <div class="form-row">
+          <label>Nächste Auffrischung</label>
+          <input type="date" id="sch-naechste">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Schulungsinhalte (kurze Beschreibung) *</label>
+        <textarea id="sch-inhalte" placeholder="z.B. KI-Nutzungsrichtlinie RidersDeal, Datenschutz bei KI-Nutzung, Risikoklassen AI Act, verbotene Praktiken, Umgang mit ChatGPT / Claude im Arbeitsalltag, Grenzen und Prüfpflicht bei KI-Outputs"></textarea>
+      </div>
+      <div class="form-row">
+        <label>Genutzte KI-Tools (die diese Person verwendet)</label>
+        <input type="text" id="sch-tools" placeholder="z.B. Claude, ChatGPT, Canva AI">
+      </div>
+      <div class="form-row">
+        <label>Bemerkungen</label>
+        <textarea id="sch-bemerkung" placeholder="Optional: Besonderheiten, offene Fragen, Folgemaßnahmen..." style="min-height:44px;"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="addSchulung()">Nachweis speichern</button>
+        <button class="btn btn-secondary" onclick="prefillSchulungBeispiel()">Beispiel laden</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Schulungsübersicht — alle Mitarbeitenden</div>
+      <table class="tbl" id="schulung-table">
+        <thead>
+          <tr>
+            <th>Person</th>
+            <th>Position</th>
+            <th>Datum</th>
+            <th>Format</th>
+            <th>Inhalte</th>
+            <th>Nächste Auffrischung</th>
+            <th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="schulung-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--darkgrey);padding:24px;">Noch keine Schulungen erfasst.</td></tr>
+        </tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="exportSchulung()">Als CSV exportieren</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">Drucken / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: TRANSPARENZ-CHECKLISTE Aug. 2026 -->
+  <div id="tab-transparenz" class="tab-panel">
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Transparenzpflicht — Checkliste für den 2. August 2026</div>
+
+      <div class="warn-box">
+        <strong>⚠️ Stichtag in ~6 Wochen:</strong> Ab 2. August 2026 gilt Art. 50 EU AI Act verbindlich. KI-generierte Inhalte, die extern kommuniziert werden, müssen kenntlich gemacht werden. Chatbots müssen sich als KI zu erkennen geben.
+      </div>
+
+      <div class="section-label">A — Externe Inhalte & Kommunikation</div>
+      <ul class="checklist" id="checklist-extern">
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Newsletter & E-Mail-Marketing (Limaloo, RidersDeal)</strong>
+            <span>KI-generierte Texte im Newsletter kennzeichnen — z.B. kleiner Hinweis im Footer: „Dieser Text wurde mit KI-Unterstützung erstellt." Alternativ: interne Policy, dass alle Newsletter-Texte manuell überarbeitet und damit nicht mehr „wesentlich KI-generiert" sind.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Social-Media-Posts</strong>
+            <span>Posts, die vollständig oder überwiegend von KI generiert wurden, brauchen einen Kennzeichnungs-Hinweis. Plattformspezifische Lösungen prüfen (z.B. Instagram / LinkedIn Labels). Interne Regel festlegen: ab welchem Anteil gilt ein Post als „wesentlich KI-generiert"?</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Website-Texte & Produktbeschreibungen</strong>
+            <span>KI-generierte Produktbeschreibungen auf ridersdeal.de kennzeichnen oder Workflow so gestalten, dass menschliche Überarbeitung den KI-Output klar überarbeitet.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Kundenkommunikation per E-Mail</strong>
+            <span>Wenn KI-Vorlagen für Kundenmails genutzt werden: Ist menschliche Prüfung vor dem Senden sichergestellt? (Bereits in eurer Richtlinie gefordert — Umsetzung prüfen.)</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>KI-generierte Bilder / Grafiken extern</strong>
+            <span>Mit KI erstellte Bilder (z.B. Canva AI, Midjourney), die extern verwendet werden, müssen als synthetisch erkennbar sein, wenn sie für echt gehalten werden könnten.</span>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="section-label">B — Chatbots & interaktive KI-Systeme</div>
+      <ul class="checklist">
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Kein externer Chatbot im Einsatz — bestätigen</strong>
+            <span>Falls kein Chatbot auf der Website oder im Kundensupport eingesetzt wird: hier abhaken und dokumentieren. Falls doch: sofort Kennzeichnungspflicht umsetzen.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Automatische Antworten / KI im Kundensupport</strong>
+            <span>Falls KI-Antworten an Kunden gehen (z.B. über Odoo, Help-Desk): Hinweis „Diese Antwort wurde von KI generiert und von einem Mitarbeitenden geprüft" o.Ä. einfügen.</span>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="section-label">C — Interne Workflows & Prozesse</div>
+      <ul class="checklist">
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Kennzeichnungs-Standard intern festlegen</strong>
+            <span>Klare interne Regel: Was muss wann wie gekennzeichnet werden? Z.B. eigenes Emoji 🤖, Footer-Zeile oder Content-Tag. Einheitlich für alle Teams festlegen.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Content-Workflow anpassen</strong>
+            <span>Im Content-Prozess (Redaktion, Social, Newsletter) eine Prüf-Stufe ergänzen: „KI-Anteil: wesentlich / überarbeitet / kein KI" — dann Kennzeichnungspflicht automatisch prüfbar.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Richtlinie um Transparenzpflicht ergänzen</strong>
+            <span>Abschnitt 4 der bestehenden KI-Richtlinie konkretisieren: „Ab 2. August 2026 sind KI-generierte Inhalte, die extern kommuniziert werden, als solche zu kennzeichnen (Art. 50 EU AI Act)." — mit konkreten Beispielen.</span>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="section-label">D — HR-Vorbereitung (Frist: Dez. 2027)</div>
+      <ul class="checklist">
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>HR-Tools auf Hochrisiko prüfen</strong>
+            <span>Nutzt ihr KI bei Stellenanzeigen, Bewerbungsscreening, Beurteilungen oder Kündigungsüberlegungen? Falls ja: Vorab-Prüfung auf Hochrisiko-Einstufung einleiten. Ab Dez. 2027 voller Pflichtenkatalog.</span>
+          </div>
+        </li>
+
+        <li>
+          <input type="checkbox" onchange="updateProgress()">
+          <div class="cl-label">
+            <strong>Menschliche Aufsicht bei HR-Entscheidungen dokumentieren</strong>
+            <span>Bereits heute sicherstellen: Keine HR-Entscheidung (Einstellung, Ablehnung, Beförderung) darf allein auf KI-Output basieren. Das ist bereits in eurer Richtlinie §5 gefordert — gut. Schriftlichen Prozess ergänzen.</span>
+          </div>
+        </li>
+
+      </ul>
+
+      <div style="margin-top:20px;" class="status-bar" id="transparenz-progress-bar">
+        <div class="stat">
+          <div class="stat-val" id="prog-done">0</div>
+          <div class="stat-lbl">Erledigt</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <div class="stat-val" id="prog-total">11</div>
+          <div class="stat-lbl">Gesamt</div>
+        </div>
+        <div class="divider"></div>
+        <div class="progress-wrap">
+          <div class="progress-lbl">Fortschritt</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="prog-pct" style="color:var(--green)">0%</div>
+          <div class="stat-lbl">Abgeschlossen</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">Checkliste drucken</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: COMPLIANCE STATUS -->
+  <div id="tab-status" class="tab-panel">
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Compliance-Übersicht — RidersDeal KI Act</div>
+
+      <div class="ok-box">
+        <strong>✅ Bereits erfüllt:</strong> KI-Nutzungsrichtlinie existiert und ist von allen MA unterschrieben (via DocuSign). KI-Datenschutzerklärung durch DSB vorhanden. Das ist ein sehr guter Ausgangspunkt — besser als die meisten KMU.
+      </div>
+
+      <div class="section-label">Status nach Artikel</div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Artikel</th>
+            <th>Pflicht</th>
+            <th>Gilt seit</th>
+            <th>Status bei RidersDeal</th>
+            <th>Handlungsbedarf</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Art. 5</strong></td>
+            <td>Verbotene KI-Praktiken</td>
+            <td>Feb. 2025</td>
+            <td><span class="badge badge-green">ERFÜLLT</span></td>
+            <td class="text-grey text-small">Richtlinie §5 deckt dies ab. Kein Social Scoring, keine automatischen Entscheidungen ohne Mensch.</td>
+          </tr>
+          <tr>
+            <td><strong>Art. 4</strong></td>
+            <td>KI-Kompetenzpflicht</td>
+            <td>Feb. 2025</td>
+            <td><span class="badge badge-gold">TEIL-ERFÜLLT</span></td>
+            <td class="text-grey text-small">Richtlinie unterschrieben ✓, aber Schulungsnachweise + Kompetenznachweis fehlen noch. → Tab Schulungsnachweise nutzen.</td>
+          </tr>
+          <tr>
+            <td><strong>KI-Inventar</strong></td>
+            <td>Best Practice / Basis für Compliance</td>
+            <td>Sofort</td>
+            <td><span class="badge badge-red">OFFEN</span></td>
+            <td class="text-grey text-small">Keine dokumentierte Liste freigegebener Tools. → Tab KI-Inventar nutzen.</td>
+          </tr>
+          <tr>
+            <td><strong>Art. 50</strong></td>
+            <td>Transparenzpflicht KI-Inhalte</td>
+            <td>2. Aug. 2026</td>
+            <td><span class="badge badge-gold">IN VORBEREITUNG</span></td>
+            <td class="text-grey text-small">~6 Wochen bis zum Stichtag. Richtlinie §4 enthält Hinweis, aber konkreter Kennzeichnungs-Workflow fehlt. → Tab Checkliste.</td>
+          </tr>
+          <tr>
+            <td><strong>Anhang III HR-KI</strong></td>
+            <td>Hochrisiko HR-Systeme</td>
+            <td>Dez. 2027</td>
+            <td><span class="badge badge-grey">NICHT FÄLLIG</span></td>
+            <td class="text-grey text-small">Noch 18 Monate. Vorausplanung empfohlen wenn KI im Recruiting genutzt wird.</td>
+          </tr>
+          <tr>
+            <td><strong>DSGVO + KI</strong></td>
+            <td>Datenschutz bei KI-Nutzung</td>
+            <td>Laufend</td>
+            <td><span class="badge badge-green">ERFÜLLT</span></td>
+            <td class="text-grey text-small">KI-Datenschutzerklärung durch DSB vorhanden. Richtlinie §2 sehr solide.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-label">Nächste Schritte — priorisiert</div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Prio</th>
+            <th>Aufgabe</th>
+            <th>Verantwortlich</th>
+            <th>Frist</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-red">SOFORT</span></td>
+            <td>KI-Inventar anlegen (alle freigegebenen Tools erfassen)</td>
+            <td>Katharina Dorn / Christina</td>
+            <td>Juli 2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">SOFORT</span></td>
+            <td>Schulungsnachweise für alle KI-nutzenden MA dokumentieren</td>
+            <td>Christina / HR</td>
+            <td>Juli 2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-gold">6 WOCHEN</span></td>
+            <td>Kennzeichnungs-Standard für KI-Inhalte festlegen & Workflow anpassen</td>
+            <td>Marketing + IT</td>
+            <td>1. Aug. 2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-gold">6 WOCHEN</span></td>
+            <td>Richtlinie um Art. 50 konkretisieren (Abschnitt 4 erweitern)</td>
+            <td>Christina</td>
+            <td>1. Aug. 2026</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-grey">MITTELFRISTIG</span></td>
+            <td>HR-Tools auf Hochrisiko prüfen, Vorlaufplanung für Dez. 2027</td>
+            <td>HR + DSB</td>
+            <td>Q1 2027</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-grey">LAUFEND</span></td>
+            <td>Richtlinie + Schulungen bei neuen Tools aktualisieren</td>
+            <td>Katharina Dorn</td>
+            <td>Laufend</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box mt16">
+        <strong>Bußgeldrisiko bei KMU:</strong> Verstöße gegen Art. 4 (Kompetenzpflicht) oder Art. 50 (Transparenz) können mit bis zu 15 Mio. € oder 3 % des Jahresumsatzes geahndet werden. In Deutschland ist die Bundesnetzagentur zuständig. Bei einem Unternehmen in der Größe von RidersDeal ist das finanzielle Risiko zwar begrenzt — aber Reputationsschäden und Verwarnung können erheblich sein.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<script>
+  // Tab switching
+  function showTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // =====================
+  // INVENTAR
+  // =====================
+  let inventar = [];
+
+  function risikobadge(r) {
+    if (r === 'minimal') return '<span class="badge badge-green">Minimal</span>';
+    if (r === 'begrenzt') return '<span class="badge badge-gold">Begrenzt</span>';
+    if (r === 'hoch') return '<span class="badge badge-red">Hoch</span>';
+    if (r === 'verboten') return '<span class="badge badge-dark">Verboten</span>';
+    return r;
+  }
+
+  function statusbadge(s) {
+    if (s === 'freigegeben') return '<span class="badge badge-green">✅ Freigegeben</span>';
+    if (s === 'pruefung') return '<span class="badge badge-gold">🔄 Prüfung</span>';
+    if (s === 'gesperrt') return '<span class="badge badge-red">🚫 Gesperrt</span>';
+    return s;
+  }
+
+  function renderInventar() {
+    const tbody = document.getElementById('inventar-body');
+    if (inventar.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--darkgrey);padding:24px;">Noch keine Tools erfasst.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = inventar.map((t, i) => `
+      <tr>
+        <td><strong>${t.name}</strong></td>
+        <td>${t.anbieter || '—'}</td>
+        <td>${t.zweck || '—'}</td>
+        <td>${risikobage(t.risiko)}</td>
+        <td>${statusbadge(t.status)}</td>
+        <td>${t.verantwortlich || '—'}</td>
+        <td><div class="actions"><button class="btn btn-danger btn-sm" onclick="removeTool(${i})">Entfernen</button></div></td>
+      </tr>
+    `).join('');
+  }
+
+  // Fix typo in render
+  function risikobage(r) { return risikobage ? risikobage(r) : risikobach(r); }
+  // Actually redefine to avoid recursion
+  const risikoRender = (r) => {
+    if (r === 'minimal') return '<span class="badge badge-green">Minimal</span>';
+    if (r === 'begrenzt') return '<span class="badge badge-gold">Begrenzt</span>';
+    if (r === 'hoch') return '<span class="badge badge-red">Hoch</span>';
+    if (r === 'verboten') return '<span class="badge badge-dark">Verboten</span>';
+    return r;
+  };
+
+  function renderInventarFixed() {
+    const tbody = document.getElementById('inventar-body');
+    if (inventar.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--darkgrey);padding:24px;">Noch keine Tools erfasst.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = inventar.map((t, i) => `
+      <tr>
+        <td><strong>${t.name}</strong></td>
+        <td>${t.anbieter || '—'}</td>
+        <td>${t.zweck}</td>
+        <td>${risikoRender(t.risiko)}</td>
+        <td>${statusbadge(t.status)}</td>
+        <td>${t.verantwortlich || '—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeTool(${i})">Entfernen</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function addTool() {
+    const name = document.getElementById('inv-name').value.trim();
+    const zweck = document.getElementById('inv-zweck').value;
+    if (!name || !zweck) { alert('Bitte mindestens Tool-Name und Zweck ausfüllen.'); return; }
+    inventar.push({
+      name,
+      anbieter: document.getElementById('inv-anbieter').value.trim(),
+      zweck,
+      risiko: document.getElementById('inv-risiko').value,
+      status: document.getElementById('inv-status').value,
+      verantwortlich: document.getElementById('inv-verantwortlich').value.trim(),
+      teams: document.getElementById('inv-teams').value.trim(),
+      daten: document.getElementById('inv-daten').value.trim(),
+    });
+    ['inv-name','inv-anbieter','inv-daten','inv-teams','inv-verantwortlich'].forEach(id => document.getElementById(id).value = '');
+    renderInventarFixed();
+  }
+
+  function removeTool(i) {
+    if (confirm('Tool entfernen?')) { inventar.splice(i, 1); renderInventarFixed(); }
+  }
+
+  function prefillBeispiele() {
+    inventar = [
+      { name: 'Claude (claude.ai)', anbieter: 'Anthropic', zweck: 'Texterstellung / Kommunikation', risiko: 'begrenzt', status: 'freigegeben', verantwortlich: 'Katharina Dorn', teams: 'Alle MA', daten: 'Nur anonymisierte / nicht-personenbezogene Texte' },
+      { name: 'ChatGPT (OpenAI)', anbieter: 'OpenAI', zweck: 'Texterstellung / Kommunikation', risiko: 'begrenzt', status: 'freigegeben', verantwortlich: 'Katharina Dorn', teams: 'Marketing, HR', daten: 'Nur anonymisierte Texte, keine Kundendaten' },
+      { name: 'Canva AI', anbieter: 'Canva', zweck: 'Bildgenerierung / Design', risiko: 'minimal', status: 'freigegeben', verantwortlich: 'Katharina Dorn', teams: 'Marketing', daten: 'Keine personenbezogenen Daten' },
+      { name: 'Google Workspace AI (Gemini)', anbieter: 'Google', zweck: 'Texterstellung / Kommunikation', risiko: 'minimal', status: 'pruefung', verantwortlich: 'Katharina Dorn', teams: 'Alle MA', daten: 'Interne Dokumente — keine Kundendaten' },
+    ];
+    renderInventarFixed();
+  }
+
+  function exportInventar() {
+    if (inventar.length === 0) { alert('Keine Daten vorhanden.'); return; }
+    const header = ['Tool','Anbieter','Zweck','Risikostufe','Status','Verantwortlich','Teams','Daten'];
+    const rows = inventar.map(t => [t.name, t.anbieter, t.zweck, t.risiko, t.status, t.verantwortlich, t.teams, t.daten].map(v => `"${(v||'').replace(/"/g,'""')}"`).join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'rd-ki-inventar.csv'; a.click();
+  }
+
+  // =====================
+  // SCHULUNG
+  // =====================
+  let schulungen = [];
+
+  function renderSchulungen() {
+    const tbody = document.getElementById('schulung-body');
+    if (schulungen.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--darkgrey);padding:24px;">Noch keine Schulungen erfasst.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = schulungen.map((s, i) => `
+      <tr>
+        <td><strong>${s.name}</strong></td>
+        <td>${s.position || '—'}</td>
+        <td>${s.datum}</td>
+        <td>${s.format}</td>
+        <td style="max-width:200px;font-size:11px;">${s.inhalte}</td>
+        <td>${s.naechste || '—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeSchulung(${i})">Entfernen</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function addSchulung() {
+    const name = document.getElementById('sch-name').value.trim();
+    const datum = document.getElementById('sch-datum').value;
+    const inhalte = document.getElementById('sch-inhalte').value.trim();
+    if (!name || !datum || !inhalte) { alert('Bitte Name, Datum und Inhalte ausfüllen.'); return; }
+    schulungen.push({
+      name, datum, inhalte,
+      position: document.getElementById('sch-position').value.trim(),
+      format: document.getElementById('sch-format').value,
+      dauer: document.getElementById('sch-dauer').value.trim(),
+      durchgefuehrt: document.getElementById('sch-durchgefuehrt').value.trim(),
+      naechste: document.getElementById('sch-naechste').value,
+      tools: document.getElementById('sch-tools').value.trim(),
+      bemerkung: document.getElementById('sch-bemerkung').value.trim(),
+    });
+    ['sch-name','sch-position','sch-datum','sch-dauer','sch-durchgefuehrt','sch-naechste','sch-tools','sch-inhalte','sch-bemerkung'].forEach(id => document.getElementById(id).value = '');
+    renderSchulungen();
+  }
+
+  function removeSchulung(i) {
+    if (confirm('Schulungsnachweis entfernen?')) { schulungen.splice(i, 1); renderSchulungen(); }
+  }
+
+  function prefillSchulungBeispiel() {
+    document.getElementById('sch-name').value = 'Muster Mitarbeiter';
+    document.getElementById('sch-position').value = 'Marketing Manager';
+    document.getElementById('sch-datum').value = '2026-06-20';
+    document.getElementById('sch-format').value = 'Interne Session (Team)';
+    document.getElementById('sch-dauer').value = '60';
+    document.getElementById('sch-durchgefuehrt').value = 'Katharina Dorn';
+    document.getElementById('sch-inhalte').value = 'KI-Nutzungsrichtlinie RidersDeal (Überblick), Datenschutz bei KI (DSGVO, was darf nicht eingegeben werden), Risikoklassen EU AI Act, verbotene Praktiken (Art. 5), Umgang mit KI-Outputs (Prüfpflicht), Transparenzpflicht ab August 2026, Meldepflicht bei Vorfällen';
+    document.getElementById('sch-tools').value = 'Claude, ChatGPT, Canva AI';
+    document.getElementById('sch-naechste').value = '2027-06-20';
+  }
+
+  function exportSchulung() {
+    if (schulungen.length === 0) { alert('Keine Daten vorhanden.'); return; }
+    const header = ['Name','Position','Datum','Format','Dauer (min)','Durchgeführt von','Inhalte','Tools','Nächste Auffrischung'];
+    const rows = schulungen.map(s => [s.name, s.position, s.datum, s.format, s.dauer, s.durchgefuehrt, s.inhalte, s.tools, s.naechste].map(v => `"${(v||'').replace(/"/g,'""')}"`).join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'rd-ki-schulungsnachweise.csv'; a.click();
+  }
+
+  // =====================
+  // TRANSPARENZ PROGRESS
+  // =====================
+  function updateProgress() {
+    const all = document.querySelectorAll('#tab-transparenz input[type="checkbox"]');
+    const done = document.querySelectorAll('#tab-transparenz input[type="checkbox"]:checked');
+    const pct = Math.round((done.length / all.length) * 100);
+    document.getElementById('prog-done').textContent = done.length;
+    document.getElementById('prog-total').textContent = all.length;
+    document.getElementById('prog-pct').textContent = pct + '%';
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-pct').style.color = pct === 100 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  }
+  updateProgress();
+</script>
+</body>
+</html>

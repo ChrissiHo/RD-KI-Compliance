@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RidersDeal · KI-Schulung</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vidaloka&family=Palanquin:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #DEB664; --gold30: #F5E9D1; --gold-hover: #A39669;
+      --green: #507255; --green30: #B9C3BA;
+      --red: #852E2E; --red30: #E7D5D5;
+      --black: #282422; --darkgrey: #858890;
+      --lightgrey: #F0F2F6; --white: #FFFFFF;
+    }
+    body { font-family: 'Palanquin', sans-serif; color: var(--black); background: var(--lightgrey); font-size: 15px; line-height: 1.7; }
+
+    /* LAYOUT */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--black); color: var(--white);
+      padding: 32px 0; position: sticky; top: 0; height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar .logo { font-family: 'Palanquin', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.14em; color: var(--gold); padding: 0 24px 20px; border-bottom: 1px solid #3a3633; }
+    .sidebar-title { font-family: 'Vidaloka', serif; font-size: 16px; font-weight: 400; padding: 16px 24px 4px; color: var(--white); }
+    .sidebar-sub { font-size: 11px; color: var(--darkgrey); padding: 0 24px 16px; border-bottom: 1px solid #3a3633; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 24px; cursor: pointer; font-size: 13px; color: #ccc;
+      transition: background 0.15s, color 0.15s; border-left: 3px solid transparent;
+    }
+    .nav-item:hover { background: #3a3633; color: var(--white); }
+    .nav-item.active { background: #3a3633; color: var(--gold); border-left-color: var(--gold); }
+    .nav-item.done { color: var(--green30); }
+    .nav-item.done::after { content: '✓'; margin-left: auto; color: var(--green); font-weight: 700; font-size: 12px; }
+    .nav-num { width: 20px; height: 20px; border-radius: 50%; background: #3a3633; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .nav-item.active .nav-num { background: var(--gold); color: var(--black); }
+    .nav-item.done .nav-num { background: var(--green); color: var(--white); }
+    .sidebar-progress { padding: 16px 24px 0; border-top: 1px solid #3a3633; margin-top: 16px; }
+    .prog-lbl { font-size: 10px; color: var(--darkgrey); font-weight: 700; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .prog-bar { height: 4px; background: #3a3633; }
+    .prog-fill { height: 100%; background: var(--gold); transition: width 0.4s; }
+    .prog-pct { font-size: 11px; color: var(--gold); margin-top: 5px; }
+
+    /* MAIN */
+    .main { flex: 1; padding: 40px 48px 80px; max-width: 780px; }
+
+    /* Section header */
+    .section-head { margin-bottom: 28px; }
+    .section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 6px; }
+    .section-title { font-family: 'Vidaloka', serif; font-size: 30px; font-weight: 400; line-height: 1.2; color: var(--black); }
+    .section-desc { margin-top: 10px; color: var(--darkgrey); font-size: 14px; }
+
+    /* Content blocks */
+    .content-block { margin-bottom: 24px; }
+    h3 { font-family: 'Vidaloka', serif; font-size: 18px; font-weight: 400; color: var(--black); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--gold30); }
+    p { margin-bottom: 12px; font-size: 14px; }
+
+    /* Info boxes */
+    .info-box  { background: var(--gold30); padding: 14px 18px; font-size: 13px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--gold); }
+    .warn-box  { background: var(--red30); padding: 14px 18px; font-size: 13px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--red); }
+    .ok-box    { background: var(--green30); padding: 14px 18px; font-size: 13px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--green); }
+    .tip-box   { background: var(--lightgrey); padding: 14px 18px; font-size: 13px; color: var(--black); line-height: 1.6; margin-bottom: 16px; border-left: 3px solid var(--darkgrey); }
+
+    /* Risiko-Kacheln */
+    .risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .risk-card { padding: 16px; border: 1px solid var(--gold30); background: var(--white); }
+    .risk-card .risk-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .risk-card .risk-title { font-family: 'Vidaloka', serif; font-size: 15px; margin-bottom: 6px; }
+    .risk-card p { font-size: 12px; color: var(--darkgrey); margin: 0; }
+    .risk-minimal .risk-label { color: var(--green); }
+    .risk-begrenzt .risk-label { color: var(--gold-hover); }
+    .risk-hoch .risk-label { color: var(--red); }
+    .risk-verboten .risk-label { color: var(--red); }
+    .risk-verboten { border-color: var(--red30); background: var(--red30); }
+
+    /* Bullet list */
+    ul.rd-list { list-style: none; margin-bottom: 16px; }
+    ul.rd-list li { padding: 6px 0 6px 20px; font-size: 14px; border-bottom: 1px solid var(--gold30); position: relative; }
+    ul.rd-list li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+    ul.rd-list li:last-child { border-bottom: none; }
+
+    /* Do/Don't */
+    .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .do-box { background: var(--green30); padding: 14px 16px; border-top: 3px solid var(--green); }
+    .dont-box { background: var(--red30); padding: 14px 16px; border-top: 3px solid var(--red); }
+    .do-box .label, .dont-box .label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .do-box .label { color: var(--green); }
+    .dont-box .label { color: var(--red); }
+    .do-box li, .dont-box li { font-size: 13px; margin-bottom: 4px; padding-left: 14px; position: relative; list-style: none; }
+    .do-box li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+    .dont-box li::before { content: '✗'; position: absolute; left: 0; color: var(--red); font-weight: 700; }
+
+    /* QUIZ */
+    .quiz-box { background: var(--white); border: 1px solid var(--gold30); padding: 24px; margin-bottom: 20px; }
+    .quiz-box .quiz-q { font-family: 'Vidaloka', serif; font-size: 16px; margin-bottom: 16px; line-height: 1.4; }
+    .quiz-option {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; margin-bottom: 8px; cursor: pointer;
+      border: 1px solid #d0ccc8; background: var(--white);
+      font-size: 13px; transition: border-color 0.15s, background 0.15s;
+    }
+    .quiz-option:hover { border-color: var(--gold); background: var(--gold30); }
+    .quiz-option.selected { border-color: var(--gold); background: var(--gold30); }
+    .quiz-option.correct { border-color: var(--green); background: var(--green30); }
+    .quiz-option.wrong { border-color: var(--red); background: var(--red30); }
+    .quiz-option input[type="radio"] { margin-top: 2px; accent-color: var(--gold); flex-shrink: 0; }
+    .quiz-feedback { display: none; padding: 12px 14px; font-size: 13px; margin-top: 8px; font-weight: 700; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--green30); color: var(--green); }
+    .quiz-feedback.fail { background: var(--red30); color: var(--red); }
+
+    /* Navigation buttons */
+    .nav-btns { display: flex; gap: 12px; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--gold30); }
+    .btn { font-family: 'Palanquin', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; padding: 12px 24px; border: none; cursor: pointer; transition: background 0.15s; }
+    .btn-primary { background: var(--gold); color: var(--black); }
+    .btn-primary:hover { background: var(--gold-hover); }
+    .btn-secondary { background: var(--black); color: var(--white); }
+    .btn-secondary:hover { background: #424242; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ABSCHLUSS / Zertifikat */
+    .cert-wrap { display: none; }
+    .cert-wrap.show { display: block; }
+    .cert-box {
+      background: var(--white); border: 2px solid var(--gold);
+      padding: 40px; text-align: center; margin-bottom: 24px;
+    }
+    .cert-logo { font-family: 'Palanquin', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 12px; }
+    .cert-title { font-family: 'Vidaloka', serif; font-size: 28px; color: var(--black); margin-bottom: 6px; }
+    .cert-sub { font-size: 13px; color: var(--darkgrey); margin-bottom: 24px; }
+    .cert-name { font-family: 'Vidaloka', serif; font-size: 36px; color: var(--black); border-bottom: 2px solid var(--gold); padding-bottom: 8px; display: inline-block; min-width: 300px; margin-bottom: 8px; }
+    .cert-detail { font-size: 12px; color: var(--darkgrey); margin-bottom: 20px; }
+    .cert-items { text-align: left; background: var(--lightgrey); padding: 16px 20px; margin: 20px 0; font-size: 12px; }
+    .cert-items li { padding: 3px 0 3px 14px; position: relative; list-style: none; }
+    .cert-items li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+    .cert-footer { font-size: 11px; color: var(--darkgrey); margin-top: 16px; }
+    .cert-sig { margin-top: 24px; display: flex; justify-content: space-around; }
+    .cert-sig-item { text-align: center; }
+    .cert-sig-line { width: 160px; border-bottom: 1px solid var(--black); margin-bottom: 4px; height: 32px; }
+    .cert-sig-lbl { font-size: 10px; color: var(--darkgrey); font-weight: 700; letter-spacing: 0.06em; }
+
+    @media print {
+      .sidebar { display: none; }
+      .main { padding: 20px; max-width: 100%; }
+      .nav-btns { display: none; }
+      .cert-wrap { display: block !important; }
+      .section-head, .content-block, .quiz-box { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">RIDERS DEAL · KI-SCHULUNG</div>
+    <div class="sidebar-title">EU AI Act</div>
+    <div class="sidebar-sub">Pflichtschulung für alle Mitarbeitenden · 2026</div>
+
+    <nav id="sidenav">
+      <div class="nav-item active" onclick="goTo(0)" id="nav-0"><span class="nav-num">1</span> Einführung & Warum</div>
+      <div class="nav-item" onclick="goTo(1)" id="nav-1"><span class="nav-num">2</span> Was ist KI?</div>
+      <div class="nav-item" onclick="goTo(2)" id="nav-2"><span class="nav-num">3</span> Risikoklassen</div>
+      <div class="nav-item" onclick="goTo(3)" id="nav-3"><span class="nav-num">4</span> Verbotene Praktiken</div>
+      <div class="nav-item" onclick="goTo(4)" id="nav-4"><span class="nav-num">5</span> Datenschutz & KI</div>
+      <div class="nav-item" onclick="goTo(5)" id="nav-5"><span class="nav-num">6</span> KI im Alltag bei RD</div>
+      <div class="nav-item" onclick="goTo(6)" id="nav-6"><span class="nav-num">7</span> HR & sensible Bereiche</div>
+      <div class="nav-item" onclick="goTo(7)" id="nav-7"><span class="nav-num">8</span> Transparenz ab Aug. 2026</div>
+      <div class="nav-item" onclick="goTo(8)" id="nav-8"><span class="nav-num">9</span> Wissenscheck</div>
+      <div class="nav-item" onclick="goTo(9)" id="nav-9"><span class="nav-num">10</span> Abschluss & Nachweis</div>
+    </nav>
+
+    <div class="sidebar-progress">
+      <div class="prog-lbl">FORTSCHRITT</div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:10%"></div></div>
+      <div class="prog-pct" id="prog-pct">Kapitel 1 von 10</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content">
+
+    <!-- ===== KAPITEL 0: EINFÜHRUNG ===== -->
+    <div class="chapter" id="ch-0">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 1 VON 10</div>
+        <div class="section-title">Warum diese Schulung?</div>
+        <div class="section-desc">Pflichtschulung nach Art. 4 EU AI Act (KI-Verordnung) — gilt für alle Mitarbeitenden, die KI beruflich einsetzen.</div>
+      </div>
+
+      <div class="warn-box">
+        <strong>Seit Februar 2025 gesetzlich verpflichtend:</strong> Der EU AI Act (Artikel 4) schreibt vor, dass alle Mitarbeitenden, die KI-Systeme beruflich nutzen, über nachweisbare KI-Kompetenz verfügen müssen. Diese Schulung erfüllt diese Pflicht für euch bei RidersDeal.
+      </div>
+
+      <div class="content-block">
+        <h3>Was ihr in dieser Schulung lernt</h3>
+        <ul class="rd-list">
+          <li>Was KI-Systeme sind und wie sie funktionieren (Grundlagen)</li>
+          <li>Die vier Risikoklassen des EU AI Act und was sie bedeuten</li>
+          <li>Welche KI-Praktiken verboten sind — und warum</li>
+          <li>Wie ihr KI datenschutzkonform nutzt (DSGVO + AI Act)</li>
+          <li>Was bei RidersDeal erlaubt ist und was nicht</li>
+          <li>Was ab August 2026 neu gilt (Transparenzpflicht)</li>
+          <li>Was im HR-Bereich besonders zu beachten ist</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Dauer & Format</h3>
+        <p>Diese Schulung dauert ca. <strong>30–45 Minuten</strong>. Am Ende gibt es einen kurzen Wissenscheck (10 Fragen) und ihr erhaltet einen druckbaren Schulungsnachweis. Ihr könnt die Schulung jederzeit unterbrechen und an der gleichen Stelle weitermachen.</p>
+      </div>
+
+      <div class="info-box">
+        <strong>Wichtig:</strong> Diese Schulung ersetzt nicht die KI-Nutzungsrichtlinie von RidersDeal. Sie ergänzt sie. Die Richtlinie habt ihr bereits unterschrieben — hier bekommt ihr das Verständnis, das dahintersteckt.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-primary" onclick="next()">Weiter: Was ist KI? →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 1: WAS IST KI? ===== -->
+    <div class="chapter" id="ch-1" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 2 VON 10</div>
+        <div class="section-title">Was ist eigentlich KI?</div>
+        <div class="section-desc">Grundverständnis, das ihr braucht, um KI verantwortungsvoll einzusetzen.</div>
+      </div>
+
+      <div class="content-block">
+        <h3>KI — einfach erklärt</h3>
+        <p>Ein <strong>KI-System</strong> ist Software, die auf Basis von Daten und Algorithmen Ergebnisse produziert — Texte, Bilder, Empfehlungen, Entscheidungen. Im Unterschied zu klassischer Software, die exakte Regeln befolgt, <em>lernt</em> KI aus Beispielen und kann mit Situationen umgehen, für die sie nicht explizit programmiert wurde.</p>
+
+        <p>Bekannte Beispiele bei RidersDeal: <strong>Claude, ChatGPT</strong> (Texte schreiben), <strong>Canva AI</strong> (Bilder generieren), <strong>Google Workspace AI / Gemini</strong> (E-Mails vorschlagen).</p>
+      </div>
+
+      <div class="content-block">
+        <h3>Was KI kann — und was nicht</h3>
+        <div class="do-dont">
+          <div class="do-box">
+            <div class="label">KI KANN</div>
+            <ul>
+              <li>Texte schnell formulieren</li>
+              <li>Ideen strukturieren und zusammenfassen</li>
+              <li>Übersetzungen liefern</li>
+              <li>Muster in Daten erkennen</li>
+              <li>Routineaufgaben beschleunigen</li>
+            </ul>
+          </div>
+          <div class="dont-box">
+            <div class="label">KI KANN NICHT ZUVERLÄSSIG</div>
+            <ul>
+              <li>Fakten garantieren (sie „halluziniert")</li>
+              <li>Kontext wirklich verstehen</li>
+              <li>Ethisch urteilen</li>
+              <li>Rechtliche Verantwortung tragen</li>
+              <li>Immer aktuell sein</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong>Wichtigste Regel:</strong> KI-Outputs sind immer eine <em>Vorlage</em>, kein Endprodukt. Ihr seid verantwortlich für alles, was ihr auf Basis von KI-Ausgaben weiterverwendet oder kommuniziert. Das steht so auch in unserer Richtlinie (§6).
+      </div>
+
+      <div class="content-block">
+        <h3>Warum reguliert die EU KI?</h3>
+        <p>KI kann enorme Vorteile bringen — aber auch Schäden: diskriminierende Entscheidungen, Manipulation, Datenmissbrauch, Verlust von Privatsphäre. Der EU AI Act soll sicherstellen, dass KI in Europa sicher, transparent und grundrechtskonform eingesetzt wird.</p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: Risikoklassen →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 2: RISIKOKLASSEN ===== -->
+    <div class="chapter" id="ch-2" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 3 VON 10</div>
+        <div class="section-title">Die vier Risikoklassen</div>
+        <div class="section-desc">Der AI Act teilt KI-Systeme nach ihrem Risikopotenzial ein. Je höher das Risiko, desto strengere Anforderungen.</div>
+      </div>
+
+      <div class="risk-grid">
+        <div class="risk-card risk-verboten">
+          <div class="risk-label">🚫 KLASSE 4 — VERBOTEN</div>
+          <div class="risk-title">Inakzeptables Risiko</div>
+          <p>Social Scoring, manipulative KI, biometrische Massenüberwachung. Seit Feb. 2025 EU-weit verboten.</p>
+        </div>
+        <div class="risk-card risk-hoch">
+          <div class="risk-label">⚠️ KLASSE 3 — HOCH</div>
+          <div class="risk-title">Hohes Risiko</div>
+          <p>KI in HR/Recruiting, Medizin, kritischer Infrastruktur. Strenger Pflichtenkatalog, Konformitätsbewertung nötig.</p>
+        </div>
+        <div class="risk-card risk-begrenzt">
+          <div class="risk-label">🔔 KLASSE 2 — BEGRENZT</div>
+          <div class="risk-title">Begrenztes Risiko</div>
+          <p>Chatbots, generative KI (ChatGPT, Claude). Hauptsächlich Transparenzpflichten ab August 2026.</p>
+        </div>
+        <div class="risk-card risk-minimal">
+          <div class="risk-label">✅ KLASSE 1 — MINIMAL</div>
+          <div class="risk-title">Minimales Risiko</div>
+          <p>Spam-Filter, KI-Spiele, Rechtschreibkorrektur. Keine zusätzlichen Pflichten — aber Art. 4 Kompetenzpflicht gilt trotzdem.</p>
+        </div>
+      </div>
+
+      <div class="content-block">
+        <h3>Was bedeutet das für meinen Alltag?</h3>
+        <p>Die meisten KI-Tools, die ihr bei RidersDeal nutzt (Claude, ChatGPT, Canva AI), fallen in <strong>Klasse 2 — begrenztes Risiko</strong>. Das bedeutet: erlaubt mit Transparenzpflichten. Ausnahme: wenn ihr KI für HR-Entscheidungen nutzt — das ist Klasse 3 (hohes Risiko).</p>
+      </div>
+
+      <div class="info-box">
+        <strong>Entscheidend ist der Zweck, nicht das Tool.</strong> Dasselbe Sprachmodell (z.B. ChatGPT) ist Klasse 2, wenn ihr damit Marketingtexte schreibt — aber Klasse 3 (Hochrisiko), wenn ihr damit Bewerbungen vorselektiert.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: Verbotene Praktiken →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 3: VERBOTENE PRAKTIKEN ===== -->
+    <div class="chapter" id="ch-3" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 4 VON 10</div>
+        <div class="section-title">Verbotene KI-Praktiken</div>
+        <div class="section-desc">Diese Anwendungen sind seit dem 2. Februar 2025 EU-weit verboten — unabhängig von Branche oder Unternehmensgröße.</div>
+      </div>
+
+      <div class="warn-box">
+        <strong>Verstöße gegen Art. 5 (verbotene Praktiken) können mit bis zu 35 Mio. € oder 7 % des Jahresumsatzes bestraft werden.</strong> Das ist die schwerste Sanktionskategorie des AI Act.
+      </div>
+
+      <div class="content-block">
+        <h3>Was ist verboten?</h3>
+        <ul class="rd-list">
+          <li><strong>Social Scoring:</strong> KI-Systeme, die Menschen anhand ihres Verhaltens oder ihrer sozialen Merkmale in einer Datenbank bewerten und auf Basis dieser Scores Entscheidungen treffen.</li>
+          <li><strong>Manipulation durch KI:</strong> Systeme, die Menschen durch unterschwellige Techniken oder Ausnutzung von Schwächen manipulieren, ohne dass sie es merken.</li>
+          <li><strong>Biometrische Massenüberwachung:</strong> KI, die im öffentlichen Raum Personen in Echtzeit über Gesichtserkennung identifiziert (bis auf wenige Ausnahmen).</li>
+          <li><strong>Emotionserkennung am Arbeitsplatz:</strong> KI, die die Emotionen von Mitarbeitenden überwacht und auswertet — verboten für Entscheidungen über sie.</li>
+          <li><strong>Profiling aus biometrischen Daten:</strong> KI, die aus biometrischen Merkmalen Rückschlüsse auf Rasse, politische Meinung, Religion etc. zieht.</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Was bedeutet das für RidersDeal konkret?</h3>
+        <div class="do-dont">
+          <div class="do-box">
+            <div class="label">ERLAUBT</div>
+            <ul>
+              <li>KI zur Texterstellung nutzen</li>
+              <li>KI für Zusammenfassungen</li>
+              <li>KI für Bildgenerierung (Marketing)</li>
+              <li>Automatische Vorschläge prüfen und annehmen/ablehnen</li>
+            </ul>
+          </div>
+          <div class="dont-box">
+            <div class="label">VERBOTEN</div>
+            <ul>
+              <li>KI zur Mitarbeiter-Überwachung</li>
+              <li>Emotionserkennung bei MA</li>
+              <li>Profile über Personen erstellen</li>
+              <li>Automatische Entscheidungen ohne Menschenprüfung</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-box">
+        Gut: Unsere Richtlinie (§5) schließt all diese Anwendungen bereits explizit aus. Ihr seid auf der sicheren Seite, solange ihr euch daran haltet.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: Datenschutz & KI →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 4: DATENSCHUTZ ===== -->
+    <div class="chapter" id="ch-4" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 5 VON 10</div>
+        <div class="section-title">Datenschutz bei KI</div>
+        <div class="section-desc">DSGVO und AI Act zusammen — was geht in KI rein, was nicht, und warum.</div>
+      </div>
+
+      <div class="content-block">
+        <h3>Das Grundprinzip</h3>
+        <p>Wenn ihr etwas in ein KI-System (ChatGPT, Claude, Canva AI etc.) eingebt, wird dieser Text <strong>an externe Server</strong> übertragen — in der Regel in die USA oder andere Länder außerhalb der EU. Dort wird er verarbeitet, möglicherweise gespeichert und u.U. für das Training zukünftiger Modelle verwendet.</p>
+        <p>Personenbezogene Daten unterliegen der DSGVO. Sie dürfen nicht ohne Rechtsgrundlage an Dritte weitergegeben werden. Ein KI-Provider ist ein Dritter.</p>
+      </div>
+
+      <div class="warn-box">
+        <strong>Was darf NICHT in KI-Systeme eingegeben werden:</strong> Namen + Kontaktdaten von Kunden oder Mitarbeitenden, Zahlungsdaten, Adressen, Bewerbungsunterlagen mit Personendaten, interne Vertragsdaten mit identifizierbaren Personen, Kranken- oder Gesundheitsdaten, Mitarbeiterbeurteilungen.
+      </div>
+
+      <div class="content-block">
+        <h3>Was darf eingegeben werden?</h3>
+        <ul class="rd-list">
+          <li><strong>Anonymisierte Texte:</strong> Z.B. Produktbeschreibungen ohne Kundenbezug</li>
+          <li><strong>Allgemeine Fragen und Recherche:</strong> „Schreib mir einen Newsletter-Entwurf über Fliegenschutz für Pferde"</li>
+          <li><strong>Aggregierte Daten:</strong> „Wir haben 3.500 Produkte und suchen eine Kategorisierungsstrategie"</li>
+          <li><strong>Eigene Textentwürfe ohne Personenbezug</strong></li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Der Unsicherheitstest</h3>
+        <p>Bevor ihr etwas eingebt: <strong>Könnten aus diesem Text eine natürliche Person identifiziert werden?</strong> Falls ja — nicht eingeben. Bei Unsicherheit: Rücksprache mit Katharina Dorn (IT) laut §2 unserer Richtlinie.</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>Praktischer Trick:</strong> Ersetze alle Namen, Adressen und identifizierenden Merkmale durch Platzhalter (z.B. [KUNDENNAME], [BETRAG]) bevor du etwas in KI eingibst. So bleibt der Text nützlich, aber nicht mehr personenbezogen.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: KI im Alltag bei RD →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 5: KI BEI RIDERSDEAL ===== -->
+    <div class="chapter" id="ch-5" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 6 VON 10</div>
+        <div class="section-title">KI im Alltag bei RidersDeal</div>
+        <div class="section-desc">Was ist erlaubt, was nicht — konkret für euren Arbeitsalltag.</div>
+      </div>
+
+      <div class="content-block">
+        <h3>Freigegebene Tools</h3>
+        <p>Bei RidersDeal dürfen ausschließlich durch die IT (Katharina Dorn) <strong>freigegebene KI-Tools</strong> genutzt werden. Ihr dürft keine KI-Apps, Extensions, Plugins oder MCP-Server eigenständig installieren oder aktivieren — auch nicht, wenn das KI-Tool selbst es vorschlägt.</p>
+      </div>
+
+      <div class="content-block">
+        <h3>Typische erlaubte Anwendungen</h3>
+        <ul class="rd-list">
+          <li><strong>Texterstellung:</strong> Newsletter-Entwürfe, Produktbeschreibungen, interne Kommunikation (ohne Personendaten)</li>
+          <li><strong>Recherche & Zusammenfassung:</strong> Marktrecherche, Zusammenfassungen von Dokumenten</li>
+          <li><strong>Bildgenerierung:</strong> Marketingbilder, Social-Media-Grafiken (Canva AI)</li>
+          <li><strong>Übersetzungen:</strong> Produkttexte, allgemeine Texte (keine Verträge mit Personenbezug)</li>
+          <li><strong>Coding-Hilfe:</strong> Code-Vorschläge, Fehlersuche (keine sensiblen Credentials eintippen!)</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Zugriff auf Unternehmenssysteme</h3>
+        <p>Der Zugriff auf Odoo, Google Workspace, Jira, Magento etc. <strong>über KI</strong> ist nur über die von IT eingerichteten Verbindungen erlaubt. API-Keys oder Zugangsdaten dürfen <strong>niemals manuell</strong> in KI-Tools eingefügt werden.</p>
+      </div>
+
+      <div class="content-block">
+        <h3>Meldepflicht</h3>
+        <p>Folgende Vorfälle müssen <strong>sofort an Katharina Dorn</strong> gemeldet werden:</p>
+        <ul class="rd-list">
+          <li>Ihr habt versehentlich personenbezogene Daten in ein KI-System eingegeben</li>
+          <li>Ein KI-System fordert euch zur Installation einer Erweiterung auf</li>
+          <li>Ihr entdeckt ein nicht freigegebenes KI-Tool auf einem Firmengerät</li>
+          <li>Ihr vermutet einen Datenleck oder unautorisierte Verarbeitung</li>
+        </ul>
+      </div>
+
+      <div class="ok-box">
+        <strong>Goldene Regel:</strong> Im Zweifel fragen, nicht ausprobieren. Katharina Dorn ist die erste Ansprechperson für alles rund um KI-Freigaben und -Vorfälle.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: HR & sensible Bereiche →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 6: HR ===== -->
+    <div class="chapter" id="ch-6" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 7 VON 10</div>
+        <div class="section-title">KI im HR-Bereich</div>
+        <div class="section-desc">Der sensibelste Bereich — hier gelten die strengsten Regeln des AI Act.</div>
+      </div>
+
+      <div class="warn-box">
+        <strong>HR-KI ist Hochrisiko (Klasse 3):</strong> KI-Systeme, die bei Einstellung, Ablehnung, Beförderung oder Kündigung von Mitarbeitenden eine Rolle spielen, fallen unter die strengsten Pflichten des AI Act.
+      </div>
+
+      <div class="content-block">
+        <h3>Was gilt als HR-Hochrisiko-KI?</h3>
+        <ul class="rd-list">
+          <li>KI, die Stellenanzeigen gezielt an bestimmte Personengruppen ausspielt</li>
+          <li>KI, die Bewerbungen filtert, sortiert oder bewertet</li>
+          <li>KI, die Bewerberinnen und Bewerber anhand von Profilen einordnet</li>
+          <li>KI, die Vorschläge für Beförderungen oder Kündigungen macht</li>
+          <li>KI, die Leistungen oder Verhalten von Mitarbeitenden auswertet</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Was ist bei RidersDeal erlaubt?</h3>
+        <p>KI darf im HR-Bereich als <strong>Hilfsmittel</strong> eingesetzt werden — z.B. um Stellenanzeigen zu formulieren oder Musterantworten zu erstellen. Was nicht erlaubt ist: KI allein über Einstellungen, Absagen oder Beförderungen entscheiden lassen.</p>
+      </div>
+
+      <div class="do-dont">
+        <div class="do-box">
+          <div class="label">ERLAUBT</div>
+          <ul>
+            <li>Stellenanzeige mit KI formulieren lassen</li>
+            <li>Absage-Vorlage mit KI erstellen</li>
+            <li>Onboarding-Material mit KI erstellen</li>
+            <li>HR-Texte übersetzen lassen</li>
+          </ul>
+        </div>
+        <div class="dont-box">
+          <div class="label">NICHT ERLAUBT</div>
+          <ul>
+            <li>Bewerbungen durch KI vorfiltern lassen</li>
+            <li>KI-Score für Kandidaten erstellen</li>
+            <li>Kündigungen auf KI-Basis entscheiden</li>
+            <li>MA-Verhalten durch KI auswerten</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Menschliche Aufsicht ist Pflicht (§5 unserer Richtlinie):</strong> Jede Entscheidung mit rechtlicher oder wesentlicher Wirkung für eine Person muss von einem Menschen getroffen werden. KI kann informieren, aber nie allein entscheiden.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: Transparenz ab August →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 7: TRANSPARENZ AUG 2026 ===== -->
+    <div class="chapter" id="ch-7" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 8 VON 10</div>
+        <div class="section-title">Transparenzpflicht ab 2. August 2026</div>
+        <div class="section-desc">In ca. 6 Wochen tritt Artikel 50 EU AI Act in Kraft — das betrifft unsere externe Kommunikation direkt.</div>
+      </div>
+
+      <div class="warn-box">
+        <strong>Stichtag: 2. August 2026</strong> — Ab dann müssen KI-generierte Inhalte, die extern kommuniziert werden, als solche kenntlich gemacht werden. Das betrifft Newsletter, Social-Media-Posts, Kundenanschreiben und mehr.
+      </div>
+
+      <div class="content-block">
+        <h3>Was muss gekennzeichnet werden?</h3>
+        <ul class="rd-list">
+          <li><strong>KI-generierte Texte</strong>, die an Kunden, Partner oder die Öffentlichkeit gehen und nicht wesentlich menschlich überarbeitet wurden</li>
+          <li><strong>Chatbots</strong>, die mit Kunden kommunizieren — sie müssen sich als KI zu erkennen geben</li>
+          <li><strong>Synthetische Bilder/Videos</strong>, die für echte Inhalte gehalten werden könnten (Deepfakes)</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Was muss NICHT gekennzeichnet werden?</h3>
+        <ul class="rd-list">
+          <li>Inhalte, die wesentlich von einem Menschen überarbeitet wurden und wo KI nur als „Assistenz" diente</li>
+          <li>Rein interne Texte (E-Mails zwischen Kolleginnen und Kollegen)</li>
+          <li>KI-Nutzung für Rechtschreibkorrektur oder Übersetzungshilfe</li>
+        </ul>
+      </div>
+
+      <div class="content-block">
+        <h3>Wie kennzeichnet man es?</h3>
+        <p>Das interne RidersDeal-Format für die Kennzeichnung wird noch festgelegt. Typische Optionen: kleiner Hinweis im Footer eines Newsletters, ein Standard-Tag wie „Mit KI-Unterstützung erstellt", oder eine klare Formulierung im Chatbot-Interface. Bitte auf die interne Kommunikation von Katharina Dorn / IT dazu achten.</p>
+      </div>
+
+      <div class="tip-box">
+        <strong>Faustregel:</strong> Habt ihr einen Text so stark überarbeitet, dass er „eurer ist"? Dann keine Kennzeichnung nötig. Habt ihr den KI-Text nur minimal angepasst und extern verschickt? Dann kennzeichnen.
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" onclick="next()">Weiter: Wissenscheck →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 8: WISSENSCHECK ===== -->
+    <div class="chapter" id="ch-8" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 9 VON 10</div>
+        <div class="section-title">Wissenscheck</div>
+        <div class="section-desc">8 Fragen — bitte beantwortet alle, bevor ihr den Nachweis erhaltet. Mindestens 6 richtig für Bestehen.</div>
+      </div>
+
+      <div id="quiz-container">
+
+        <div class="quiz-box" id="q1">
+          <div class="quiz-q">1. Seit wann gilt die KI-Kompetenzpflicht (Art. 4 EU AI Act) für Unternehmen?</div>
+          <div class="quiz-option" onclick="answer('q1', this, false)"><input type="radio" name="q1"> Erst ab August 2026</div>
+          <div class="quiz-option" onclick="answer('q1', this, true)"><input type="radio" name="q1"> Seit Februar 2025</div>
+          <div class="quiz-option" onclick="answer('q1', this, false)"><input type="radio" name="q1"> Ab Dezember 2027</div>
+          <div class="quiz-option" onclick="answer('q1', this, false)"><input type="radio" name="q1"> Sie gilt noch gar nicht</div>
+          <div class="quiz-feedback" id="q1-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q2">
+          <div class="quiz-q">2. Ich möchte mit ChatGPT eine Antwort auf eine Kundenbeschwerde verfassen. Darf ich den Namen und die E-Mail-Adresse des Kunden in ChatGPT eingeben?</div>
+          <div class="quiz-option" onclick="answer('q2', this, false)"><input type="radio" name="q2"> Ja, das ist problemlos</div>
+          <div class="quiz-option" onclick="answer('q2', this, true)"><input type="radio" name="q2"> Nein — personenbezogene Daten dürfen nicht in KI-Systeme eingegeben werden</div>
+          <div class="quiz-option" onclick="answer('q2', this, false)"><input type="radio" name="q2"> Nur wenn der Kunde einverstanden ist</div>
+          <div class="quiz-option" onclick="answer('q2', this, false)"><input type="radio" name="q2"> Ja, wenn ich danach die Daten aus ChatGPT lösche</div>
+          <div class="quiz-feedback" id="q2-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q3">
+          <div class="quiz-q">3. Welche Risikoklasse hat ein KI-System, das Bewerbungen für eine Stelle vorselektiert?</div>
+          <div class="quiz-option" onclick="answer('q3', this, false)"><input type="radio" name="q3"> Minimales Risiko</div>
+          <div class="quiz-option" onclick="answer('q3', this, false)"><input type="radio" name="q3"> Begrenztes Risiko</div>
+          <div class="quiz-option" onclick="answer('q3', this, true)"><input type="radio" name="q3"> Hohes Risiko (Hochrisiko)</div>
+          <div class="quiz-option" onclick="answer('q3', this, false)"><input type="radio" name="q3"> Verbotene Praktik</div>
+          <div class="quiz-feedback" id="q3-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q4">
+          <div class="quiz-q">4. Ein neues KI-Plugin verspricht, meine Arbeit zu erleichtern. Ich darf es auf meinem Firmengerät installieren, wenn…</div>
+          <div class="quiz-option" onclick="answer('q4', this, false)"><input type="radio" name="q4"> …es kostenlos ist</div>
+          <div class="quiz-option" onclick="answer('q4', this, false)"><input type="radio" name="q4"> …es mir ein Kollege empfohlen hat</div>
+          <div class="quiz-option" onclick="answer('q4', this, true)"><input type="radio" name="q4"> …es von Katharina Dorn (IT) geprüft und freigegeben wurde</div>
+          <div class="quiz-option" onclick="answer('q4', this, false)"><input type="radio" name="q4"> …ich es nur für private Zwecke nutze</div>
+          <div class="quiz-feedback" id="q4-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q5">
+          <div class="quiz-q">5. Was ist ab dem 2. August 2026 neu verpflichtend?</div>
+          <div class="quiz-option" onclick="answer('q5', this, false)"><input type="radio" name="q5"> KI-Systeme müssen vollständig abgeschaltet werden</div>
+          <div class="quiz-option" onclick="answer('q5', this, true)"><input type="radio" name="q5"> KI-generierte externe Inhalte müssen als solche gekennzeichnet werden</div>
+          <div class="quiz-option" onclick="answer('q5', this, false)"><input type="radio" name="q5"> Jeder Mitarbeitende braucht eine KI-Lizenz</div>
+          <div class="quiz-option" onclick="answer('q5', this, false)"><input type="radio" name="q5"> KI darf nur noch von der IT-Abteilung bedient werden</div>
+          <div class="quiz-feedback" id="q5-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q6">
+          <div class="quiz-q">6. Ich habe versehentlich die Adresse eines Kunden in Claude eingegeben. Was tue ich?</div>
+          <div class="quiz-option" onclick="answer('q6', this, false)"><input type="radio" name="q6"> Nichts — einmal ist kein Problem</div>
+          <div class="quiz-option" onclick="answer('q6', this, false)"><input type="radio" name="q6"> Ich lösche den Chat-Verlauf und sage niemandem etwas</div>
+          <div class="quiz-option" onclick="answer('q6', this, true)"><input type="radio" name="q6"> Ich melde es sofort an Katharina Dorn (Meldepflicht §8 der Richtlinie)</div>
+          <div class="quiz-option" onclick="answer('q6', this, false)"><input type="radio" name="q6"> Ich melde es beim Datenschutzbeauftragten direkt, ohne IT zu informieren</div>
+          <div class="quiz-feedback" id="q6-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q7">
+          <div class="quiz-q">7. Darf ich den Output eines KI-Systems ohne eigene Prüfung direkt an Kunden weiterleiten?</div>
+          <div class="quiz-option" onclick="answer('q7', this, false)"><input type="radio" name="q7"> Ja, wenn das Tool von der IT freigegeben ist</div>
+          <div class="quiz-option" onclick="answer('q7', this, false)"><input type="radio" name="q7"> Ja, wenn der Text gut klingt</div>
+          <div class="quiz-option" onclick="answer('q7', this, true)"><input type="radio" name="q7"> Nein — KI-Outputs müssen immer durch mich geprüft werden, bevor ich sie verwende</div>
+          <div class="quiz-option" onclick="answer('q7', this, false)"><input type="radio" name="q7"> Ja, für kurze Texte unter 100 Wörtern</div>
+          <div class="quiz-feedback" id="q7-fb"></div>
+        </div>
+
+        <div class="quiz-box" id="q8">
+          <div class="quiz-q">8. Welche der folgenden Anwendungen ist nach dem EU AI Act verboten?</div>
+          <div class="quiz-option" onclick="answer('q8', this, false)"><input type="radio" name="q8"> KI-Unterstützung beim Schreiben von Newsletter-Texten</div>
+          <div class="quiz-option" onclick="answer('q8', this, false)"><input type="radio" name="q8"> KI-Chatbot mit Hinweis, dass es ein Chatbot ist</div>
+          <div class="quiz-option" onclick="answer('q8', this, true)"><input type="radio" name="q8"> Ein System, das Mitarbeitende anhand ihres Verhaltens bewertet und automatisch Konsequenzen zieht</div>
+          <div class="quiz-option" onclick="answer('q8', this, false)"><input type="radio" name="q8"> KI-Bildgenerierung für Marketingmaterial</div>
+          <div class="quiz-feedback" id="q8-fb"></div>
+        </div>
+
+      </div>
+
+      <div id="quiz-result" style="display:none;" class="info-box" style="margin-top:16px;"></div>
+
+      <div class="nav-btns">
+        <button class="btn btn-secondary" onclick="prev()">← Zurück</button>
+        <button class="btn btn-primary" id="btn-submit-quiz" onclick="submitQuiz()" style="display:none;">Wissenscheck auswerten</button>
+        <button class="btn btn-primary" id="btn-to-cert" onclick="next()" style="display:none;">Weiter zum Abschluss →</button>
+      </div>
+    </div>
+
+    <!-- ===== KAPITEL 9: ABSCHLUSS & NACHWEIS ===== -->
+    <div class="chapter" id="ch-9" style="display:none;">
+      <div class="section-head">
+        <div class="section-eyebrow">KAPITEL 10 VON 10</div>
+        <div class="section-title">Abschluss & Nachweis</div>
+      </div>
+
+      <div class="ok-box" id="abschluss-msg">Schulung abgeschlossen. Bitte Namen eingeben und Nachweis ausdrucken.</div>
+
+      <div class="content-block">
+        <h3>Name für den Schulungsnachweis</h3>
+        <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:20px;">
+          <div style="flex:1;">
+            <label for="cert-input" style="display:block;font-size:11px;font-weight:700;color:var(--darkgrey);margin-bottom:4px;letter-spacing:0.04em;">VOLLSTÄNDIGER NAME</label>
+            <input type="text" id="cert-input" placeholder="Vorname Nachname" style="width:100%;font-family:'Palanquin',sans-serif;font-size:15px;color:var(--black);border:1px solid #d0ccc8;padding:10px 12px;outline:none;" oninput="updateCert()">
+          </div>
+          <button class="btn btn-primary" onclick="window.print()">Nachweis drucken / PDF</button>
+        </div>
+      </div>
+
+      <!-- ZERTIFIKAT (nur bei Druck sichtbar + Vorschau) -->
+      <div class="cert-box" id="cert-preview">
+        <div class="cert-logo">RIDERS DEAL GMBH · UNTERHACHING</div>
+        <div class="cert-title">Schulungsnachweis</div>
+        <div class="cert-sub">EU AI Act · Artikel 4 KI-Kompetenzpflicht</div>
+        <div style="font-size:13px;color:var(--darkgrey);margin-bottom:16px;">Hiermit wird bestätigt, dass</div>
+        <div class="cert-name" id="cert-name-display">____________________</div>
+        <div class="cert-detail" id="cert-detail">die KI-Pflichtschulung der RidersDeal GmbH erfolgreich absolviert hat.</div>
+
+        <ul class="cert-items">
+          <li>Was ist KI und wie funktioniert sie (Grundlagen)</li>
+          <li>Die vier Risikoklassen des EU AI Act</li>
+          <li>Verbotene KI-Praktiken (Art. 5)</li>
+          <li>Datenschutz bei KI-Nutzung (DSGVO + AI Act)</li>
+          <li>KI-Nutzungsregeln bei RidersDeal (freigegebene Tools, Meldepflichten)</li>
+          <li>KI im HR-Bereich — Hochrisiko-Anforderungen</li>
+          <li>Transparenzpflicht ab 2. August 2026 (Art. 50)</li>
+          <li>Wissenscheck erfolgreich bestanden</li>
+        </ul>
+
+        <div class="cert-detail">
+          Datum: <strong id="cert-date"></strong> &nbsp;|&nbsp;
+          Dauer: ca. 40 Minuten &nbsp;|&nbsp;
+          Format: Interaktive E-Learning-Schulung
+        </div>
+
+        <div class="cert-sig">
+          <div class="cert-sig-item">
+            <div class="cert-sig-line"></div>
+            <div class="cert-sig-lbl">UNTERSCHRIFT MITARBEITENDE/R</div>
+          </div>
+          <div class="cert-sig-item">
+            <div class="cert-sig-line"></div>
+            <div class="cert-sig-lbl">GESCHÄFTSFÜHRUNG / HR</div>
+          </div>
+        </div>
+
+        <div class="cert-footer">
+          RidersDeal GmbH · Inselkammerstraße 5 · 82008 Unterhaching · Schulungsdokument gemäß Art. 4 EU AI Act (Verordnung EU 2024/1689) · Nächste Auffrischung empfohlen: 12 Monate
+        </div>
+      </div>
+
+      <div class="nav-btns" style="display:none;"><!-- keine weiteren Buttons --></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let currentChapter = 0;
+  const totalChapters = 10;
+  const completed = new Array(totalChapters).fill(false);
+  const quizAnswers = {};
+  let quizSubmitted = false;
+
+  function goTo(n) {
+    document.getElementById('ch-' + currentChapter).style.display = 'none';
+    document.getElementById('nav-' + currentChapter).classList.remove('active');
+    if (!completed[currentChapter]) {
+      completed[currentChapter] = true;
+      document.getElementById('nav-' + currentChapter).classList.add('done');
+    }
+    currentChapter = n;
+    document.getElementById('ch-' + currentChapter).style.display = 'block';
+    document.getElementById('nav-' + currentChapter).classList.add('active');
+    document.getElementById('nav-' + currentChapter).classList.remove('done');
+    updateProgress();
+    window.scrollTo(0, 0);
+  }
+
+  function next() { if (currentChapter < totalChapters - 1) goTo(currentChapter + 1); }
+  function prev() { if (currentChapter > 0) goTo(currentChapter - 1); }
+
+  function updateProgress() {
+    const done = completed.filter(Boolean).length;
+    const pct = Math.round((currentChapter + 1) / totalChapters * 100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-pct').textContent = 'Kapitel ' + (currentChapter + 1) + ' von ' + totalChapters;
+  }
+
+  // QUIZ
+  const correctAnswers = { q1: 1, q2: 1, q3: 2, q4: 2, q5: 1, q6: 2, q7: 2, q8: 2 }; // 0-indexed
+
+  function answer(qid, el, isCorrect) {
+    if (quizSubmitted) return;
+    // deselect all
+    el.closest('.quiz-box').querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
+    quizAnswers[qid] = isCorrect;
+    // check if all answered
+    if (Object.keys(quizAnswers).length === 8) {
+      document.getElementById('btn-submit-quiz').style.display = 'inline-block';
+    }
+  }
+
+  function submitQuiz() {
+    quizSubmitted = true;
+    let correct = 0;
+    const qids = ['q1','q2','q3','q4','q5','q6','q7','q8'];
+    const feedback = {
+      q1: 'Richtig: Die KI-Kompetenzpflicht gilt seit dem 2. Februar 2025 — unabhängig von der Tool-Risikoklasse.',
+      q2: 'Richtig: Personenbezogene Daten (Name, E-Mail, Adresse etc.) dürfen nie in externe KI-Systeme eingegeben werden.',
+      q3: 'Richtig: KI-Systeme für Recruiting und Bewerbungsauswahl fallen unter Anhang III des AI Act — das ist Hochrisiko.',
+      q4: 'Richtig: Ausschließlich durch Katharina Dorn (IT) freigegebene Tools dürfen genutzt werden. Keine eigenständige Installation.',
+      q5: 'Richtig: Ab 2. August 2026 gilt die Transparenzpflicht (Art. 50) — KI-generierte externe Inhalte müssen kenntlich gemacht werden.',
+      q6: 'Richtig: Meldepflicht gemäß §8 der RidersDeal KI-Richtlinie — sofort an Katharina Dorn.',
+      q7: 'Richtig: Laut §6 der Richtlinie trägt der Nutzer die Verantwortung. KI-Outputs müssen immer geprüft werden.',
+      q8: 'Richtig: Social-Scoring-ähnliche Systeme, die Mitarbeitende automatisch bewerten und Konsequenzen ziehen, sind verboten (Art. 5).',
+    };
+
+    qids.forEach(qid => {
+      const box = document.getElementById(qid);
+      const fb = document.getElementById(qid + '-fb');
+      const opts = box.querySelectorAll('.quiz-option');
+      const isCorrect = quizAnswers[qid];
+      if (isCorrect) {
+        correct++;
+        opts.forEach(o => { if (o.querySelector('input').checked) o.classList.add('correct'); });
+        fb.textContent = '✓ Richtig! ' + feedback[qid];
+        fb.className = 'quiz-feedback show ok';
+      } else {
+        opts.forEach(o => { if (o.querySelector('input').checked) o.classList.add('wrong'); });
+        fb.textContent = '✗ Leider falsch. ' + feedback[qid];
+        fb.className = 'quiz-feedback show fail';
+      }
+    });
+
+    const resultDiv = document.getElementById('quiz-result');
+    resultDiv.style.display = 'block';
+    if (correct >= 6) {
+      resultDiv.className = 'ok-box';
+      resultDiv.innerHTML = '<strong>✓ Bestanden!</strong> ' + correct + ' von 8 Fragen richtig. Ihr könnt jetzt den Schulungsnachweis erstellen.';
+      document.getElementById('btn-to-cert').style.display = 'inline-block';
+    } else {
+      resultDiv.className = 'warn-box';
+      resultDiv.innerHTML = '<strong>Leider nicht bestanden.</strong> ' + correct + ' von 8 Fragen richtig (Mindestens 6 nötig). Bitte lest die entsprechenden Kapitel nochmals durch und versucht es erneut.';
+    }
+    document.getElementById('btn-submit-quiz').style.display = 'none';
+  }
+
+  // CERT
+  function updateCert() {
+    const name = document.getElementById('cert-input').value.trim();
+    document.getElementById('cert-name-display').textContent = name || '____________________';
+  }
+
+  // Set today's date on cert
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  document.getElementById('cert-date').textContent = dateStr;
+</script>
+</body>
+</html>

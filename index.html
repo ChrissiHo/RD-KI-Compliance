@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RidersDeal · KI Compliance Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vidaloka&family=Palanquin:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #DEB664; --gold30: #F5E9D1; --gold-hover: #A39669;
+      --green: #507255; --green30: #B9C3BA;
+      --red: #852E2E; --red30: #E7D5D5;
+      --black: #282422; --darkgrey: #858890;
+      --lightgrey: #F0F2F6; --white: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Palanquin', sans-serif;
+      color: var(--black);
+      background: var(--black);
+      min-height: 100vh;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--black);
+      padding: 64px 48px 56px;
+      border-bottom: 2px solid var(--gold);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-family: 'Vidaloka', serif;
+      font-size: 54px;
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--darkgrey);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    /* Pflicht-Badge */
+    .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hbadge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 5px 12px;
+      border-radius: 2px;
+    }
+    .hbadge-gold { background: var(--gold); color: var(--black); }
+    .hbadge-outline { border: 1px solid #3a3633; color: var(--darkgrey); }
+    .hbadge-green { background: var(--green); color: var(--white); }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      background: var(--lightgrey);
+      min-height: calc(100vh - 260px);
+    }
+    .content-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 48px 80px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: 'Vidaloka', serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--darkgrey);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--gold);
+      margin-bottom: 24px;
+    }
+
+    /* ── TOOL CARDS ── */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .tool-card {
+      background: var(--white);
+      border: 1px solid var(--gold30);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: var(--black);
+      transition: border-color 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .tool-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .tool-card-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+    .tool-card-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--gold-hover);
+      margin-bottom: 6px;
+    }
+    .tool-card-title {
+      font-family: 'Vidaloka', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--black);
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .tool-card-desc {
+      font-size: 13px;
+      color: var(--darkgrey);
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 20px;
+    }
+    .tool-card-features {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .tool-card-features li {
+      font-size: 12px;
+      color: var(--black);
+      padding: 5px 0 5px 16px;
+      border-bottom: 1px solid var(--gold30);
+      position: relative;
+    }
+    .tool-card-features li:last-child { border-bottom: none; }
+    .tool-card-features li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .tool-card-cta {
+      display: inline-block;
+      font-family: 'Palanquin', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      padding: 11px 22px;
+      background: var(--gold);
+      color: var(--black);
+      text-decoration: none;
+      border: none;
+      transition: background 0.15s;
+      align-self: flex-start;
+    }
+    .tool-card-cta:hover { background: var(--gold-hover); }
+    .tool-card-cta.secondary {
+      background: var(--black);
+      color: var(--white);
+    }
+    .tool-card-cta.secondary:hover { background: #424242; }
+
+    /* ── TIMELINE ── */
+    .timeline { margin-bottom: 48px; }
+    .tl-item {
+      display: flex;
+      gap: 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gold30);
+      align-items: flex-start;
+    }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-dot {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .tl-dot.done { background: var(--green); color: var(--white); }
+    .tl-dot.now  { background: var(--gold); color: var(--black); }
+    .tl-dot.soon { background: var(--red); color: var(--white); }
+    .tl-dot.later{ background: var(--lightgrey); color: var(--darkgrey); border: 1px solid #d0ccc8; }
+    .tl-body { flex: 1; }
+    .tl-date { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--darkgrey); margin-bottom: 2px; }
+    .tl-title { font-family: 'Vidaloka', serif; font-size: 15px; font-weight: 400; margin-bottom: 3px; }
+    .tl-desc { font-size: 12px; color: var(--darkgrey); line-height: 1.5; }
+
+    /* ── INFO STRIP ── */
+    .info-strip {
+      background: var(--gold30);
+      border-left: 3px solid var(--gold);
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 48px;
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .contact-card {
+      background: var(--white);
+      border: 1px solid var(--gold30);
+      padding: 20px;
+    }
+    .contact-role {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--darkgrey);
+      margin-bottom: 4px;
+    }
+    .contact-name {
+      font-family: 'Vidaloka', serif;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .contact-desc { font-size: 12px; color: var(--darkgrey); line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--black);
+      border-top: 1px solid #3a3633;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-logo {
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .footer-text {
+      font-size: 11px;
+      color: var(--darkgrey);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      .hero { padding: 40px 24px 36px; }
+      .hero-title { font-size: 36px; }
+      .content-inner { padding: 32px 24px 60px; }
+      .tool-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">RIDERS DEAL GMBH · INTERN</div>
+    <h1 class="hero-title">KI Compliance<br><span>Hub</span></h1>
+    <p class="hero-desc">Alle Tools und Unterlagen zum EU AI Act für Mitarbeitende der RidersDeal GmbH. Schulung absolvieren, Nachweis ausdrucken, Inventar pflegen.</p>
+    <div class="hero-badges">
+      <span class="hbadge hbadge-gold">Pflichtschulung</span>
+      <span class="hbadge hbadge-green">Art. 4 EU AI Act</span>
+      <span class="hbadge hbadge-outline">Stand: Juni 2026</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="content-inner">
+
+      <!-- INFO STRIP -->
+      <div class="info-strip">
+        <strong>Für alle Mitarbeitenden:</strong> Seit Februar 2025 ist die KI-Kompetenzschulung gesetzlich verpflichtend (Art. 4 EU AI Act). Bitte absolviert die Schulung, druckt den Nachweis aus und gebt ihn an HR weiter. Bei Fragen: Katharina Dorn (IT).
+      </div>
+
+      <!-- TOOLS -->
+      <div class="section-label">Eure Tools</div>
+      <div class="tool-grid">
+
+        <!-- SCHULUNG -->
+        <div class="tool-card">
+          <div class="tool-card-icon">🎓</div>
+          <div class="tool-card-eyebrow">PFLICHTSCHULUNG · CA. 40 MIN</div>
+          <div class="tool-card-title">KI-Schulung für Mitarbeitende</div>
+          <p class="tool-card-desc">Interaktive Schulung mit 10 Kapiteln — von KI-Grundlagen bis zur Transparenzpflicht ab August 2026. Mit Wissenscheck und druckbarem Nachweis.</p>
+          <ul class="tool-card-features">
+            <li>Was ist KI, Chancen und Grenzen</li>
+            <li>Die 4 Risikoklassen des EU AI Act</li>
+            <li>Verbotene Praktiken, Datenschutz bei KI</li>
+            <li>KI-Regeln bei RidersDeal konkret</li>
+            <li>HR & Transparenzpflicht ab Aug. 2026</li>
+            <li>Wissenscheck + druckbarer Nachweis</li>
+          </ul>
+          <a href="schulung.html" class="tool-card-cta">Schulung starten →</a>
+        </div>
+
+        <!-- TOOLKIT -->
+        <div class="tool-card">
+          <div class="tool-card-icon">📋</div>
+          <div class="tool-card-eyebrow">FÜR IT & HR · VERWALTUNG</div>
+          <div class="tool-card-title">Compliance Toolkit</div>
+          <p class="tool-card-desc">Für Katharina Dorn und HR: KI-Inventar aller freigegebenen Tools, Schulungsnachweise verwalten, Transparenz-Checkliste für August 2026 und Compliance-Übersicht.</p>
+          <ul class="tool-card-features">
+            <li>KI-Inventar — alle Tools erfassen & exportieren</li>
+            <li>Schulungsnachweise dokumentieren (Art. 4)</li>
+            <li>Checkliste Transparenzpflicht Aug. 2026</li>
+            <li>Compliance-Status auf einen Blick</li>
+          </ul>
+          <a href="toolkit.html" class="tool-card-cta secondary">Toolkit öffnen →</a>
+        </div>
+
+      </div>
+
+      <!-- ZEITPLAN -->
+      <div class="section-label">Was gilt wann — EU AI Act Zeitplan</div>
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-dot done">✓</div>
+          <div class="tl-body">
+            <div class="tl-date">FEBRUAR 2025 — BEREITS IN KRAFT</div>
+            <div class="tl-title">Verbotene Praktiken (Art. 5) + KI-Kompetenzpflicht (Art. 4)</div>
+            <div class="tl-desc">Social Scoring, Mitarbeiter-Überwachung durch KI und manipulative Systeme sind verboten. Alle Mitarbeitenden, die KI nutzen, müssen geschult sein und Nachweis vorliegen haben.</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot soon">!</div>
+          <div class="tl-body">
+            <div class="tl-date">2. AUGUST 2026 — IN 6 WOCHEN</div>
+            <div class="tl-title">Transparenzpflicht (Art. 50)</div>
+            <div class="tl-desc">KI-generierte Inhalte, die extern kommuniziert werden (Newsletter, Social Media, Kundenanschreiben), müssen als solche gekennzeichnet werden. Chatbots müssen sich als KI zu erkennen geben.</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot later">→</div>
+          <div class="tl-body">
+            <div class="tl-date">DEZEMBER 2027</div>
+            <div class="tl-title">Hochrisiko-Pflichten (Anhang III) — u.a. HR-KI</div>
+            <div class="tl-desc">KI-Systeme im HR-Bereich (Recruiting, Bewerberauswahl, Beurteilungen) unterliegen dann dem vollen Pflichtenkatalog: Risikomanagement, Dokumentation, Logging, menschliche Aufsicht.</div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot later">→</div>
+          <div class="tl-body">
+            <div class="tl-date">AUGUST 2028</div>
+            <div class="tl-title">Hochrisiko-Pflichten (Anhang I)</div>
+            <div class="tl-desc">Produktsicherheits-relevante KI-Systeme — für RidersDeal voraussichtlich nicht relevant.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ANSPRECHPERSONEN -->
+      <div class="section-label">Ansprechpersonen</div>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-role">IT · KI-FREIGABEN & VORFÄLLE</div>
+          <div class="contact-name">Katharina Dorn</div>
+          <div class="contact-desc">Freigabe neuer KI-Tools, Meldung von Datenvorfällen, technische Fragen zur KI-Nutzung.</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-role">HR · SCHULUNGSNACHWEISE</div>
+          <div class="contact-name">Christina Höfer</div>
+          <div class="contact-desc">Schulungsnachweise einreichen, Fragen zur Richtlinie, HR-bezogene KI-Fragen.</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-role">DATENSCHUTZ</div>
+          <div class="contact-name">Datenschutzbeauftragter</div>
+          <div class="contact-desc">KI-Datenschutzerklärung, DSGVO-Fragen im Zusammenhang mit KI-Nutzung.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">RIDERS DEAL GMBH</div>
+      <div class="footer-text">Inselkammerstraße 5 · 82008 Unterhaching · Internes Dokument · EU AI Act Compliance · Stand Juni 2026</div>
+    </div>
+  </div>
+
+</body>
+</html>
